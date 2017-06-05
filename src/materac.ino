@@ -12,12 +12,12 @@ public:
     ~RunningAverage();
 
     void clear();
-    void addValue(float);
-    void fillValue(float, int);
+    void addValue(double);
+    void fillValue(double, int);
 
-    float getAverage();
+    double getAverage();
 
-    float getElement(uint8_t idx);
+    double getElement(uint8_t idx);
     uint8_t getSize() { return _size; }
     uint8_t getCount() { return _cnt; }
 
@@ -25,14 +25,14 @@ protected:
     uint8_t _size;
     uint8_t _cnt;
     uint8_t _idx;
-    float   _sum;
-    float * _ar;
+    double   _sum;
+    double * _ar;
 };
 
 RunningAverage::RunningAverage(int n)
 {
     _size = n;
-    _ar = (float*) malloc(_size * sizeof(float));
+    _ar = (double*) malloc(_size * sizeof(double));
     if (_ar == NULL) _size = 0;
     clear();
 }
@@ -52,7 +52,7 @@ void RunningAverage::clear()
 }
 
 // adds a new value to the data-set
-void RunningAverage::addValue(float f)
+void RunningAverage::addValue(double f)
 {
     if (_ar == NULL) return;
     _sum -= _ar[_idx];
@@ -64,14 +64,14 @@ void RunningAverage::addValue(float f)
 }
 
 // returns the average of the data-set added sofar
-float RunningAverage::getAverage()
+double RunningAverage::getAverage()
 {
     if (_cnt == 0) return NAN;
-    return _sum / _cnt;
+    return _sum / (double)_cnt;
 }
 
 // returns the value of an element if exist, 0 otherwise
-float RunningAverage::getElement(uint8_t idx)
+double RunningAverage::getElement(uint8_t idx)
 {
     if (idx >=_cnt ) return NAN;
     return _ar[idx];
@@ -80,7 +80,7 @@ float RunningAverage::getElement(uint8_t idx)
 // fill the average with a value
 // the param number determines how often value is added (weight)
 // number should preferably be between 1 and size
-void RunningAverage::fillValue(float value, int number)
+void RunningAverage::fillValue(double value, int number)
 {
     clear();
     for (int i = 0; i < number; i++)
@@ -91,7 +91,7 @@ void RunningAverage::fillValue(float value, int number)
 
 
 uint8_t PIN_HX711_DOUT = 15;
-uint8_t PIN_HX711_PD_SCK = 14; 
+uint8_t PIN_HX711_PD_SCK = 14;
 
 HX711 g_scale(PIN_HX711_DOUT, PIN_HX711_PD_SCK);
 Encoder myEnc(2, 3);
@@ -113,18 +113,19 @@ int a=0;
 long oldPosition  = -999;
 void loop()
 {
- 
 
-  
-  unsigned long tens = g_scale.get_grams(2);
+
+
+  double tens = g_scale.get_value(2)/1342.0;
+
   {
   unsigned long m = millis();
 
-  myRA.addValue((double)tens/1342.0);
-    sprintf(buffer, "s1>{\"time\":%lu,\"tens\":%lu,\"offset\":%d,\"ra\":%lu}",m,tens/1342, myEnc.read(),( unsigned long)myRA.getAverage());
-    
-    
-    
+  myRA.addValue(tens*100);
+    sprintf(buffer, "s1>{\"time\":%lu,\"tens\":%lu,\"offset\":%ld,\"ra\":%lu}",m,(unsigned long)(tens*100), myEnc.read(),(unsigned long)(myRA.getAverage()));
+
+
+
     Serial.println(buffer);
   }
 }
