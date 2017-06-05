@@ -2,7 +2,7 @@
 
 
 #include "Arduino.h"
-#include <Encoder.h>
+#include "Encoder.h"
 
 class RunningAverage
 {
