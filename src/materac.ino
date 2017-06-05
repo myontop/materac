@@ -116,15 +116,13 @@ void loop()
 
 
 
-  double tens = g_scale.get_value(2)/1342.0;
+  double tens = g_scale.get_value(2);
 
   {
   unsigned long m = millis();
 
   myRA.addValue(tens*100);
     sprintf(buffer, "s1>{\"time\":%lu,\"tens\":%lu,\"offset\":%ld,\"ra\":%lu}",m,(unsigned long)(tens*100), myEnc.read(),(unsigned long)(myRA.getAverage()));
-
-
 
     Serial.println(buffer);
   }
