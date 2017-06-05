@@ -11,7 +11,9 @@ install:
   # - ln -s $PWD /usr/local/share/arduino/libraries/Adafruit_FONA
   # - arduino --install-library "Adafruit SleepyDog Library,Adafruit MQTT Library"
 script:
-  - arduino --verify --board arduino:avr:uno $PWD/materac.ino
+  - arduino --verify --board arduino:avr:uno $PWD/myontop/materac.ino
+  - arduino --verify --board arduino:avr:uno $PWD/myontop/materac/materac.ino
+  - arduino --verify --board arduino:avr:uno $PWD/materac/materac.ino
 notifications:
   email:
     on_success: change
